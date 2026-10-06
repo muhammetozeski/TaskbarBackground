@@ -5,3 +5,5 @@ Read README.md before changing code. This is a standalone native C++ Windhawk ex
 Code, comments, technical logs and documentation are English. User-facing labels support Turkish and English. Keep generated distributions under publish and disposable probes in NewTemp. Preserve existing Windhawk settings when installing updates.
 
 Read [the menu transport lesson](Docs/MenuActionTransport.md) before changing request dispatch. Do not perform shell COM calls inside the synchronous WM_COPYDATA handler; dispatch the copied request through the host message loop.
+
+Read [the desktop creation layout](Docs/DesktopCreationLayout.md) before changing the manager interface. Preserve every intervening virtual-method declaration; a valid interface identity alone does not verify a partial method table.

@@ -2,7 +2,7 @@
 // @id taskbar-background
 // @name Arkaplana Yolla
 // @description Move an application's windows to the second virtual desktop from its taskbar menu.
-// @version 1.0.0
+// @version 1.0.1
 // @author muhammetozeski
 // @github https://github.com/muhammetozeski
 // @include explorer.exe

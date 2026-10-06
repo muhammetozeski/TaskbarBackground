@@ -43,8 +43,10 @@ Executable matching uses the full process path, including child processes hostin
 
 From this repository directory, run `pwsh -File .\Build.ps1`. Windhawk's bundled compiler produces `publish\AppData\TaskbarBackground.dll`; no additional packages are downloaded.
 
-The project reuses the supplied `TaskbarMenuButton.hpp`. The shell action is queued after the menu's synchronous message returns, so desktop COM calls run from the host apartment's normal message loop. See [the transport lesson](Docs/MenuActionTransport.md) when changing the callback.
+The project reuses the supplied `TaskbarMenuButton.hpp`. The shell action is queued after the menu's synchronous message returns, so desktop COM calls run from the host apartment's normal message loop. See [the transport lesson](Docs/MenuActionTransport.md) when changing the callback, and [the manager layout](Docs/DesktopCreationLayout.md) when changing desktop creation.
 
 ## Verified behavior
 
 The command appeared in the native taskbar menu. After queuing the shell action outside the synchronous message, an ImageGlass window moved successfully to desktop two. The user confirmed the result; local action storage recorded one moved window and error zero.
+
+Version 1.0.1 also verified the missing-desktop path: with only desktop one present, the user confirmed that the command created desktop two and moved the application there. A subsequent Chrome move recorded one moved window with error zero.

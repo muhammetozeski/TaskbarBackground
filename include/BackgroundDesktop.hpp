@@ -13,7 +13,7 @@ inline constexpr GUID ManagerId{0x53f5ca0b,0x158f,0x4124,{0x90,0x0c,0x05,0x71,0x
 inline constexpr GUID ViewCollectionId{0x1841c6d7,0x4f9d,0x42c0,{0xaf,0x41,0x87,0x47,0x53,0x8f,0x10,0xe5}};
 inline constexpr GUID DesktopId{0x3f07f4be,0xb107,0x441a,{0xaf,0x0f,0x39,0xd8,0x25,0x29,0x07,0x2c}};
 
-// These interfaces match the Windows 11 shell contracts used by RunInBackground.
+// The manager layout includes the Windows 11 24H2 foreground-move slot before CreateDesktop.
 struct ApplicationView : IUnknown {};
 struct ViewCollection : IUnknown {
     virtual HRESULT STDMETHODCALLTYPE GetViews(IObjectArray**) = 0;
@@ -33,6 +33,7 @@ struct Manager : IUnknown {
     virtual HRESULT STDMETHODCALLTYPE GetDesktops(IObjectArray**) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetAdjacentDesktop(Desktop*, int, Desktop**) = 0;
     virtual HRESULT STDMETHODCALLTYPE SwitchDesktop(Desktop*) = 0;
+    virtual HRESULT STDMETHODCALLTYPE SwitchDesktopAndMoveForegroundView(Desktop*) = 0;
     virtual HRESULT STDMETHODCALLTYPE CreateDesktop(Desktop**) = 0;
 };
 
@@ -85,11 +86,19 @@ inline unsigned MoveApplication(const std::wstring& executable, unsigned desktop
     check_hresult(shell->QueryService(ViewCollectionId, ViewCollectionId, views.put_void()));
     UINT count{};
     check_hresult(manager->GetCount(&count));
+    Wh_SetIntValue(L"LastDesktopCountBefore", count);
+    Wh_SetIntValue(L"LastCreatedDesktops", 0);
+    unsigned createdCount{};
     while (count < desktopNumber) {
+        UINT previousCount = count;
         com_ptr<Desktop> created;
         check_hresult(manager->CreateDesktop(created.put()));
         check_hresult(manager->GetCount(&count));
+        if (count <= previousCount) winrt::throw_hresult(E_UNEXPECTED);
+        Wh_SetIntValue(L"LastCreatedDesktops", ++createdCount);
+        Wh_Log(L"Missing desktop created; before=%u; after=%u", previousCount, count);
     }
+    Wh_SetIntValue(L"LastDesktopCountAfter", count);
     com_ptr<IObjectArray> desktops;
     check_hresult(manager->GetDesktops(desktops.put()));
     com_ptr<Desktop> target;
