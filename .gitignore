@@ -1,0 +1,6 @@
+publish/
+AppCache/
+UserData/
+UserCache/
+*.pfx
+PFX-PAROLA.txt
